@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grand Azur Hotel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="navbar">
+  <div class="nav-logo">Grand <span>Azur</span></div>
+  <div class="nav-links">
+    <a href="#rooms">Номера</a>
+    <a href="#about">О нас</a>
+    <a href="#contacts">Контакты</a>
+  </div>
+  <div class="nav-user" id="navUser"></div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">★ 5-звёздочный отель</div>
+  <h1>Добро пожаловать в <em>Grand Azur</em></h1>
+  <p>Роскошный отдых на берегу Каспийского моря. Бронируйте лучшие номера по выгодным ценам.</p>
+  <div class="hero-btns">
+    <a href="#rooms" class="btn btn-gold">Смотреть номера</a>
+    <a href="auth.html" class="btn btn-outline">Войти / Зарегистрироваться</a>
+  </div>
+</section>
+
+<!-- ABOUT STRIP -->
+<section style="background:var(--dark-2); border-top:1px solid rgba(201,168,76,0.1); border-bottom:1px solid rgba(201,168,76,0.1);">
+  <div style="max-width:1100px;margin:0 auto;padding:2rem;display:flex;gap:3rem;flex-wrap:wrap;justify-content:center;text-align:center;">
+    <div><div style="font-size:2rem;color:var(--gold)">156</div><div style="color:var(--text-muted);font-size:0.85rem;text-transform:uppercase;letter-spacing:.08em">Номеров</div></div>
+    <div><div style="font-size:2rem;color:var(--gold)">4</div><div style="color:var(--text-muted);font-size:0.85rem;text-transform:uppercase;letter-spacing:.08em">Ресторана</div></div>
+    <div><div style="font-size:2rem;color:var(--gold)">15+</div><div style="color:var(--text-muted);font-size:0.85rem;text-transform:uppercase;letter-spacing:.08em">Лет опыта</div></div>
+    <div><div style="font-size:2rem;color:var(--gold)">98%</div><div style="color:var(--text-muted);font-size:0.85rem;text-transform:uppercase;letter-spacing:.08em">Довольных гостей</div></div>
+  </div>
+</section>
+
+<!-- ROOMS -->
+<section class="section" id="rooms">
+  <h2 class="section-title">Наши номера</h2>
+  <div class="gold-line"></div>
+  <p class="section-sub">Выберите идеальный номер для вашего отдыха</p>
+  <div class="rooms-grid" id="roomsGrid"></div>
+</section>
+
+<!-- ABOUT -->
+<section class="section" id="about" style="background:var(--dark-2)">
+  <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;flex-wrap:wrap;">
+    <div>
+      <h2 class="section-title">О Grand Azur</h2>
+      <div class="gold-line"></div>
+      <p style="color:var(--text-muted);line-height:1.8;margin-bottom:1rem;">
+        Grand Azur — это не просто отель, это место, где каждая деталь продумана для вашего совершенного отдыха. Расположенный в историческом центре города с видом на Каспийское море, наш отель сочетает восточное гостеприимство и европейский стандарт комфорта.
+      </p>
+      <p style="color:var(--text-muted);line-height:1.8;">
+        Наша команда из более чем 200 профессионалов готова обеспечить незабываемое пребывание каждому гостю — 24 часа в сутки, 7 дней в неделю.
+      </p>
+      <div style="margin-top:1.5rem;display:flex;gap:1rem;">
+        <a href="auth.html" class="btn btn-gold">Забронировать</a>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div style="background:var(--dark-3);border-radius:8px;padding:1.5rem;border:1px solid rgba(201,168,76,0.1)">
+        <div style="font-size:1.5rem;margin-bottom:.5rem">🏊</div>
+        <h4 style="font-size:1rem;margin-bottom:.3rem">Бассейн</h4>
+        <p style="color:var(--text-muted);font-size:0.83rem">Открытый и крытый бассейны с панорамным видом</p>
+      </div>
+      <div style="background:var(--dark-3);border-radius:8px;padding:1.5rem;border:1px solid rgba(201,168,76,0.1)">
+        <div style="font-size:1.5rem;margin-bottom:.5rem">🍽️</div>
+        <h4 style="font-size:1rem;margin-bottom:.3rem">Рестораны</h4>
+        <p style="color:var(--text-muted);font-size:0.83rem">4 ресторана с блюдами мировой кухни</p>
+      </div>
+      <div style="background:var(--dark-3);border-radius:8px;padding:1.5rem;border:1px solid rgba(201,168,76,0.1)">
+        <div style="font-size:1.5rem;margin-bottom:.5rem">💆</div>
+        <h4 style="font-size:1rem;margin-bottom:.3rem">Спа & Велнес</h4>
+        <p style="color:var(--text-muted);font-size:0.83rem">Полный спектр оздоровительных процедур</p>
+      </div>
+      <div style="background:var(--dark-3);border-radius:8px;padding:1.5rem;border:1px solid rgba(201,168,76,0.1)">
+        <div style="font-size:1.5rem;margin-bottom:.5rem">🚘</div>
+        <h4 style="font-size:1rem;margin-bottom:.3rem">Трансфер</h4>
+        <p style="color:var(--text-muted);font-size:0.83rem">Встреча в аэропорту, аренда авто</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTS -->
+<section class="section" id="contacts">
+  <h2 class="section-title">Контакты</h2>
+  <div class="gold-line"></div>
+  <div style="display:flex;gap:3rem;flex-wrap:wrap;margin-top:1.5rem;">
+    <div>
+      <div style="color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem">Адрес</div>
+      <div style="color:var(--cream)">Актобе, пр. Абилкайыр хана, 47</div>
+    </div>
+    <div>
+      <div style="color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem">Телефон</div>
+      <div style="color:var(--cream)">+7 (708) 843 09 59 </div>
+    </div>
+    <div>
+      <div style="color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem">Email</div>
+      <div style="color:var(--cream)">diarkorkitbay@gmail.com</div>
+    </div>
+    <div>
+      <div style="color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem">Режим работы</div>
+      <div style="color:var(--cream)">Круглосуточно</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:var(--dark-2);border-top:1px solid rgba(255,255,255,0.05);padding:1.5rem 2rem;text-align:center;">
+  <div style="color:var(--text-muted);font-size:0.82rem;">© 2025 Grand Azur Hotel. Все права защищены.</div>
+</footer>
+
+<!-- BOOK MODAL -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="bookModalTitle">Бронирование</h3>
+      <button class="modal-close" onclick="closeModal('bookModal')">×</button>
+    </div>
+    <div id="bookModalContent"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+renderNavUser(document.getElementById('navUser'));
+
+// Render rooms
+function renderRooms() {
+  const rooms = DB.get('rooms') || [];
+  const grid = document.getElementById('roomsGrid');
+  grid.innerHTML = rooms.map(r => `
+    <div class="card">
+      <div class="room-img" style="background-image:url('${r.img}')">
+        <div class="room-cat"><span class="badge badge-gold">${r.category}</span></div>
+      </div>
+      <div class="room-body">
+        <h3 class="room-name">${r.name}</h3>
+        <p class="room-desc">${r.desc}</p>
+        <div class="room-features">
+          ${r.features.map(f => `<span class="room-feature">✦ ${f}</span>`).join('')}
+        </div>
+        <div style="color:var(--text-muted);font-size:.82rem;margin-bottom:1rem">👤 До ${r.capacity} чел. · ${r.area} м²</div>
+        <div class="room-footer">
+          <div class="room-price">${formatPrice(r.price)} <span>/ ночь</span></div>
+          ${r.available
+            ? `<button class="btn btn-gold btn-sm" onclick="startBook(${r.id})">Забронировать</button>`
+            : `<span class="badge badge-red">Занят</span>`}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function startBook(roomId) {
+  if (!currentUser) {
+    window.location.href = 'auth.html';
+    return;
+  }
+  if (currentUser.role === 'admin') { showToast('Администратор не может бронировать', 'error'); return; }
+  const room = getRoom(roomId);
+  document.getElementById('bookModalTitle').textContent = 'Бронирование: ' + room.name;
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('bookModalContent').innerHTML = `
+    <div class="form-group"><label>Дата заезда</label><input type="date" id="bkIn" min="${today}" value="${today}"></div>
+    <div class="form-group"><label>Дата выезда</label><input type="date" id="bkOut" min="${today}"></div>
+    <div class="form-group"><label>Количество гостей</label>
+      <select id="bkGuests">${Array.from({length:room.capacity},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('')}</select>
+    </div>
+    <div id="bkSummary" style="margin-bottom:1rem;padding:.8rem;background:var(--dark-3);border-radius:4px;font-size:.9rem;color:var(--text-muted)">
+      Выберите даты для расчёта стоимости
+    </div>
+    <button class="btn btn-gold btn-full" onclick="confirmBook(${roomId})">Подтвердить бронь</button>`;
+
+  ['bkIn','bkOut'].forEach(id => {
+    document.getElementById(id).addEventListener('change', updateSummary);
+  });
+  function updateSummary() {
+    const a = document.getElementById('bkIn').value;
+    const b = document.getElementById('bkOut').value;
+    if (a && b && b > a) {
+      const n = diffDays(a, b);
+      document.getElementById('bkSummary').innerHTML =
+        `<b style="color:var(--cream)">${n} ночей × ${formatPrice(room.price)}</b> = <b style="color:var(--gold)">${formatPrice(n * room.price)}</b>`;
+    }
+  }
+  openModal('bookModal');
+}
+
+function confirmBook(roomId) {
+  const checkIn  = document.getElementById('bkIn').value;
+  const checkOut = document.getElementById('bkOut').value;
+  const guests   = +document.getElementById('bkGuests').value;
+  if (!checkIn || !checkOut || checkOut <= checkIn) { showToast('Укажите корректные даты', 'error'); return; }
+  const room = getRoom(roomId);
+  const nights = diffDays(checkIn, checkOut);
+  const booking = {
+    id: Date.now(), userId: currentUser.id, roomId,
+    checkIn, checkOut, guests, total: nights * room.price,
+    status: 'confirmed', createdAt: new Date().toISOString().split('T')[0]
+  };
+  const bookings = DB.get('bookings') || [];
+  bookings.push(booking);
+  DB.set('bookings', bookings);
+  closeModal('bookModal');
+  showToast('Номер успешно забронирован! ✓', 'success');
+}
+
+renderRooms();
+</script>
+</body>
+</html>

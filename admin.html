@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Администратор — Grand Azur Hotel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a class="nav-logo" href="index.html">Grand <span>Azur</span></a>
+  <div style="display:flex;align-items:center;gap:.5rem;">
+    <span class="badge badge-gold">Администратор</span>
+  </div>
+  <div class="nav-user" id="navUser"></div>
+</nav>
+
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-label">Главное</div>
+    <div class="sidebar-section">
+      <div class="sidebar-link active" onclick="showPage('dashboard')"><span class="icon">◈</span> Дашборд</div>
+      <div class="sidebar-link" onclick="showPage('bookings')"><span class="icon">📋</span> Бронирования</div>
+      <div class="sidebar-link" onclick="showPage('rooms')"><span class="icon">🚪</span> Номера</div>
+      <div class="sidebar-link" onclick="showPage('clients')"><span class="icon">👥</span> Клиенты</div>
+    </div>
+    <div class="sidebar-label" style="margin-top:1rem">Аккаунт</div>
+    <div class="sidebar-section">
+      <div class="sidebar-link" onclick="logout()"><span class="icon">⏻</span> Выйти</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="admin-content">
+
+    <!-- DASHBOARD -->
+    <div class="admin-page active" id="page-dashboard">
+      <h2 style="font-size:1.5rem;margin-bottom:.3rem">Обзор</h2>
+      <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:1.5rem">Статистика отеля</p>
+
+      <div class="stats-grid" id="statsGrid"></div>
+
+      <h3 style="font-size:1.1rem;margin-bottom:1rem">Последние бронирования</h3>
+      <div style="background:var(--dark-2);border:1px solid rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;">
+        <div class="table-wrap">
+          <table id="recentTable">
+            <thead><tr><th>Гость</th><th>Номер</th><th>Заезд</th><th>Выезд</th><th>Сумма</th><th>Статус</th></tr></thead>
+            <tbody id="recentBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div class="admin-page" id="page-bookings">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h2 style="font-size:1.5rem;">Бронирования</h2>
+          <p style="color:var(--text-muted);font-size:.88rem">Управление всеми бронями</p>
+        </div>
+        <div style="display:flex;gap:.7rem;flex-wrap:wrap;">
+          <select id="bkFilter" onchange="renderBookingsPage()" style="background:var(--dark-3);border:1px solid rgba(255,255,255,0.08);color:var(--cream);padding:.5rem .8rem;border-radius:4px;font-size:.88rem;">
+            <option value="">Все статусы</option>
+            <option value="confirmed">Подтверждено</option>
+            <option value="pending">Ожидает</option>
+            <option value="cancelled">Отменено</option>
+          </select>
+        </div>
+      </div>
+      <div style="background:var(--dark-2);border:1px solid rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Гость</th><th>Номер</th><th>Заезд</th><th>Выезд</th><th>Гостей</th><th>Сумма</th><th>Статус</th><th>Действия</th></tr></thead>
+            <tbody id="bookingsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROOMS -->
+    <div class="admin-page" id="page-rooms">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h2 style="font-size:1.5rem;">Номера</h2>
+          <p style="color:var(--text-muted);font-size:.88rem">Управление номерным фондом</p>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="openAddRoom()">+ Добавить номер</button>
+      </div>
+      <div style="background:var(--dark-2);border:1px solid rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Название</th><th>Категория</th><th>Цена / ночь</th><th>Вместимость</th><th>Площадь</th><th>Статус</th><th>Действия</th></tr></thead>
+            <tbody id="roomsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTS -->
+    <div class="admin-page" id="page-clients">
+      <div style="margin-bottom:1.5rem;">
+        <h2 style="font-size:1.5rem;">Клиенты</h2>
+        <p style="color:var(--text-muted);font-size:.88rem">Список зарегистрированных пользователей</p>
+      </div>
+      <div style="background:var(--dark-2);border:1px solid rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Броней</th><th>Потрачено</th></tr></thead>
+            <tbody id="clientsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ADD/EDIT ROOM MODAL -->
+<div class="modal-overlay" id="roomModal">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-header">
+      <h3 id="roomModalTitle">Добавить номер</h3>
+      <button class="modal-close" onclick="closeModal('roomModal')">×</button>
+    </div>
+    <div class="form-group"><label>Название</label><input type="text" id="rm-name" placeholder="Стандартный номер"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div class="form-group"><label>Категория</label>
+        <select id="rm-cat"><option>Стандарт</option><option>Делюкс</option><option>Люкс</option><option>Президентский</option></select>
+      </div>
+      <div class="form-group"><label>Цена (₸/ночь)</label><input type="number" id="rm-price" placeholder="8500"></div>
+      <div class="form-group"><label>Вместимость</label><input type="number" id="rm-cap" placeholder="2" min="1" max="10"></div>
+      <div class="form-group"><label>Площадь (м²)</label><input type="number" id="rm-area" placeholder="24"></div>
+    </div>
+    <div class="form-group"><label>Описание</label><textarea id="rm-desc" rows="2" placeholder="Описание номера..."></textarea></div>
+    <div class="form-group"><label>Удобства <span style="color:var(--text-muted);font-size:.78rem">(через запятую)</span></label><input type="text" id="rm-features" placeholder="Wi-Fi, Кондиционер, ТВ"></div>
+    <div class="form-group"><label>URL фото</label><input type="text" id="rm-img" placeholder="https://..."></div>
+    <div class="form-group">
+      <label>Статус</label>
+      <select id="rm-avail"><option value="true">Доступен</option><option value="false">Занят</option></select>
+    </div>
+    <input type="hidden" id="rm-id">
+    <button class="btn btn-gold btn-full" onclick="saveRoom()">Сохранить</button>
+  </div>
+</div>
+
+<!-- BOOKING STATUS MODAL -->
+<div class="modal-overlay" id="statusModal">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-header">
+      <h3>Изменить статус</h3>
+      <button class="modal-close" onclick="closeModal('statusModal')">×</button>
+    </div>
+    <input type="hidden" id="statusBkId">
+    <div style="display:flex;flex-direction:column;gap:.7rem;margin-top:.5rem;">
+      <button class="btn btn-ghost" onclick="setStatus('confirmed')">✓ Подтвердить</button>
+      <button class="btn btn-ghost" onclick="setStatus('pending')">⏳ Ожидает</button>
+      <button class="btn btn-danger" onclick="setStatus('cancelled')">✕ Отменить</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+if (!requireAuth('admin')) throw '';
+renderNavUser(document.getElementById('navUser'));
+
+function showPage(name) {
+  document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.sidebar-link')[['dashboard','bookings','rooms','clients'].indexOf(name)].classList.add('active');
+
+  if (name === 'dashboard')  renderDashboard();
+  if (name === 'bookings')   renderBookingsPage();
+  if (name === 'rooms')      renderRoomsPage();
+  if (name === 'clients')    renderClientsPage();
+}
+
+// ── DASHBOARD ──
+function renderDashboard() {
+  const bookings = DB.get('bookings') || [];
+  const rooms    = DB.get('rooms') || [];
+  const users    = (DB.get('users') || []).filter(u => u.role === 'client');
+  const total    = bookings.filter(b => b.status !== 'cancelled').reduce((s, b) => s + b.total, 0);
+  const occupied = bookings.filter(b => b.status === 'confirmed').map(b => b.roomId);
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Бронирований</div><div class="stat-value">${bookings.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Клиентов</div><div class="stat-value">${users.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Номеров</div><div class="stat-value">${rooms.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Выручка</div><div class="stat-value gold">${formatPrice(total)}</div></div>`;
+
+  const recent = [...bookings].reverse().slice(0, 8);
+  document.getElementById('recentBody').innerHTML = recent.map(b => {
+    const u = getUser(b.userId); const r = getRoom(b.roomId);
+    return `<tr>
+      <td>${u ? u.name : '—'}</td>
+      <td>${r ? r.name : '—'}</td>
+      <td>${formatDate(b.checkIn)}</td>
+      <td>${formatDate(b.checkOut)}</td>
+      <td style="color:var(--gold)">${formatPrice(b.total)}</td>
+      <td>${statusBadge(b.status)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── BOOKINGS PAGE ──
+function renderBookingsPage() {
+  const filter = document.getElementById('bkFilter').value;
+  let bookings = DB.get('bookings') || [];
+  if (filter) bookings = bookings.filter(b => b.status === filter);
+  bookings = [...bookings].reverse();
+  document.getElementById('bookingsBody').innerHTML = bookings.map(b => {
+    const u = getUser(b.userId); const r = getRoom(b.roomId);
+    return `<tr>
+      <td style="color:var(--text-muted);font-size:.8rem">#${b.id.toString().slice(-4)}</td>
+      <td>${u ? u.name : '—'}</td>
+      <td>${r ? r.name : '—'}</td>
+      <td>${formatDate(b.checkIn)}</td>
+      <td>${formatDate(b.checkOut)}</td>
+      <td>${b.guests}</td>
+      <td style="color:var(--gold)">${formatPrice(b.total)}</td>
+      <td>${statusBadge(b.status)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="openStatusModal(${b.id})">Статус</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function openStatusModal(id) {
+  document.getElementById('statusBkId').value = id;
+  openModal('statusModal');
+}
+function setStatus(status) {
+  const id = +document.getElementById('statusBkId').value;
+  const bks = DB.get('bookings') || [];
+  const b = bks.find(x => x.id === id);
+  if (b) b.status = status;
+  DB.set('bookings', bks);
+  closeModal('statusModal');
+  renderBookingsPage();
+  showToast('Статус обновлён', 'success');
+}
+
+// ── ROOMS PAGE ──
+function renderRoomsPage() {
+  const rooms = DB.get('rooms') || [];
+  document.getElementById('roomsBody').innerHTML = rooms.map(r => `
+    <tr>
+      <td><b style="color:var(--cream)">${r.name}</b></td>
+      <td><span class="badge badge-gold">${r.category}</span></td>
+      <td style="color:var(--gold)">${formatPrice(r.price)}</td>
+      <td>${r.capacity} чел.</td>
+      <td>${r.area} м²</td>
+      <td>${r.available ? '<span class="badge badge-green">Свободен</span>' : '<span class="badge badge-red">Занят</span>'}</td>
+      <td>
+        <div class="table-actions">
+          <button class="btn btn-ghost btn-sm" onclick="editRoom(${r.id})">Изменить</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRoom(${r.id})">Удалить</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function openAddRoom() {
+  document.getElementById('roomModalTitle').textContent = 'Добавить номер';
+  ['rm-name','rm-price','rm-cap','rm-area','rm-desc','rm-features','rm-img','rm-id'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('rm-cat').value   = 'Стандарт';
+  document.getElementById('rm-avail').value = 'true';
+  openModal('roomModal');
+}
+
+function editRoom(id) {
+  const r = getRoom(id);
+  document.getElementById('roomModalTitle').textContent = 'Редактировать номер';
+  document.getElementById('rm-id').value       = r.id;
+  document.getElementById('rm-name').value     = r.name;
+  document.getElementById('rm-cat').value      = r.category;
+  document.getElementById('rm-price').value    = r.price;
+  document.getElementById('rm-cap').value      = r.capacity;
+  document.getElementById('rm-area').value     = r.area;
+  document.getElementById('rm-desc').value     = r.desc;
+  document.getElementById('rm-features').value = r.features.join(', ');
+  document.getElementById('rm-img').value      = r.img || '';
+  document.getElementById('rm-avail').value    = r.available ? 'true' : 'false';
+  openModal('roomModal');
+}
+
+function saveRoom() {
+  const name = document.getElementById('rm-name').value.trim();
+  const price = +document.getElementById('rm-price').value;
+  if (!name || !price) { showToast('Заполните название и цену', 'error'); return; }
+  const rooms = DB.get('rooms') || [];
+  const editId = document.getElementById('rm-id').value;
+  const data = {
+    name, category: document.getElementById('rm-cat').value,
+    price, capacity: +document.getElementById('rm-cap').value || 2,
+    area: +document.getElementById('rm-area').value || 20,
+    desc: document.getElementById('rm-desc').value,
+    features: document.getElementById('rm-features').value.split(',').map(s=>s.trim()).filter(Boolean),
+    img: document.getElementById('rm-img').value || 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80',
+    available: document.getElementById('rm-avail').value === 'true',
+  };
+  if (editId) {
+    const r = rooms.find(x => x.id == editId);
+    Object.assign(r, data);
+    showToast('Номер обновлён', 'success');
+  } else {
+    data.id = Date.now();
+    rooms.push(data);
+    showToast('Номер добавлен', 'success');
+  }
+  DB.set('rooms', rooms);
+  closeModal('roomModal');
+  renderRoomsPage();
+}
+
+function deleteRoom(id) {
+  if (!confirm('Удалить номер?')) return;
+  DB.set('rooms', (DB.get('rooms') || []).filter(r => r.id !== id));
+  renderRoomsPage();
+  showToast('Номер удалён', 'info');
+}
+
+// ── CLIENTS PAGE ──
+function renderClientsPage() {
+  const users    = (DB.get('users') || []);
+  const bookings = DB.get('bookings') || [];
+  document.getElementById('clientsBody').innerHTML = users.map(u => {
+    const myBks = bookings.filter(b => b.userId === u.id);
+    const spent = myBks.filter(b => b.status !== 'cancelled').reduce((s, b) => s + b.total, 0);
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:.7rem;">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--dark-3));display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.9rem;color:var(--dark);flex-shrink:0">${u.name[0]}</div>
+          <b style="color:var(--cream)">${u.name}</b>
+        </div>
+      </td>
+      <td style="color:var(--text-muted)">${u.email}</td>
+      <td>${u.role === 'admin' ? '<span class="badge badge-gold">Админ</span>' : '<span class="badge badge-gray">Клиент</span>'}</td>
+      <td>${myBks.length}</td>
+      <td style="color:var(--gold)">${spent ? formatPrice(spent) : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// Init
+renderDashboard();
+</script>
+</body>
+</html>

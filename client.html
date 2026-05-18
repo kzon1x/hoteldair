@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Личный кабинет — Grand Azur Hotel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a class="nav-logo" href="index.html">Grand <span>Azur</span></a>
+  <div class="nav-links">
+    <a href="index.html#rooms">Номера</a>
+    <a href="client.html">Мои брони</a>
+  </div>
+  <div class="nav-user" id="navUser"></div>
+</nav>
+
+<!-- CONTENT -->
+<div class="section" style="max-width:1000px;">
+
+  <!-- GREETING -->
+  <div style="margin-bottom:2.5rem;">
+    <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:.2rem">Добро пожаловать обратно</p>
+    <h1 id="clientName" style="font-size:2rem;"></h1>
+  </div>
+
+  <!-- TABS -->
+  <div style="display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:2rem;">
+    <button class="client-tab active" onclick="showSection('bookings')">Мои бронирования</button>
+    <button class="client-tab" onclick="showSection('browse')">Выбрать номер</button>
+    <button class="client-tab" onclick="showSection('profile')">Профиль</button>
+  </div>
+
+  <!-- BOOKINGS -->
+  <div class="client-section" id="sec-bookings">
+    <h2 style="font-size:1.3rem;margin-bottom:1.2rem;">История бронирований</h2>
+    <div class="bookings-list" id="myBookingsList"></div>
+  </div>
+
+  <!-- BROWSE ROOMS -->
+  <div class="client-section" id="sec-browse" style="display:none">
+    <div class="booking-hero">
+      <div class="form-group">
+        <label>Категория</label>
+        <select id="filterCat" onchange="renderBrowse()">
+          <option value="">Все</option>
+          <option>Стандарт</option>
+          <option>Делюкс</option>
+          <option>Люкс</option>
+          <option>Президентский</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Гостей</label>
+        <select id="filterGuests" onchange="renderBrowse()">
+          <option value="">Любое</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3+</option>
+          <option value="4">4+</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Дата заезда</label>
+        <input type="date" id="filterIn">
+      </div>
+      <div class="form-group">
+        <label>Дата выезда</label>
+        <input type="date" id="filterOut">
+      </div>
+      <button class="btn btn-gold" onclick="renderBrowse()">Найти</button>
+    </div>
+    <div class="rooms-grid" id="browseGrid"></div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="client-section" id="sec-profile" style="display:none">
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar" id="profileAvatar"></div>
+        <div>
+          <h3 id="profileName" style="font-size:1.2rem;"></h3>
+          <div id="profileEmail" style="color:var(--text-muted);font-size:.9rem;"></div>
+          <span class="badge badge-gold" style="margin-top:.4rem;display:inline-block">Клиент</span>
+        </div>
+      </div>
+      <div class="form-group"><label>Имя</label><input type="text" id="editName"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="editEmail" disabled style="opacity:.5"></div>
+      <div class="form-group"><label>Новый пароль <span style="color:var(--text-muted);font-size:.78rem">(оставьте пустым)</span></label><input type="password" id="editPass" placeholder="••••••"></div>
+      <button class="btn btn-gold" onclick="saveProfile()">Сохранить изменения</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOOK MODAL -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="bookModalTitle">Бронирование</h3>
+      <button class="modal-close" onclick="closeModal('bookModal')">×</button>
+    </div>
+    <div id="bookModalContent"></div>
+  </div>
+</div>
+
+<style>
+.client-tab {
+  background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--text-muted); font-family: 'Jost', sans-serif;
+  font-size: .9rem; font-weight: 500; letter-spacing: .05em;
+  padding: .7rem 1.2rem; cursor: pointer; transition: all .2s;
+}
+.client-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.client-tab:hover { color: var(--cream); }
+</style>
+
+<script src="app.js"></script>
+<script>
+if (!requireAuth('client')) throw '';
+
+// Init user display
+document.getElementById('clientName').textContent = currentUser.name;
+renderNavUser(document.getElementById('navUser'));
+
+function showSection(name) {
+  document.querySelectorAll('.client-section').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('.client-tab').forEach((t, i) => {
+    const names = ['bookings', 'browse', 'profile'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.getElementById('sec-' + name).style.display = '';
+  if (name === 'bookings') renderMyBookings();
+  if (name === 'browse')   renderBrowse();
+  if (name === 'profile')  renderProfile();
+}
+
+// ── MY BOOKINGS ──
+function renderMyBookings() {
+  const bookings = (DB.get('bookings') || []).filter(b => b.userId === currentUser.id).reverse();
+  const list = document.getElementById('myBookingsList');
+  if (!bookings.length) {
+    list.innerHTML = `<div style="color:var(--text-muted);padding:2rem 0;">У вас пока нет бронирований. <a href="#" onclick="showSection('browse')">Выбрать номер →</a></div>`;
+    return;
+  }
+  list.innerHTML = bookings.map(b => {
+    const room = getRoom(b.roomId);
+    const nights = diffDays(b.checkIn, b.checkOut);
+    return `
+    <div class="booking-item">
+      <div class="booking-item-info">
+        <h4>${room ? room.name : 'Номер'}</h4>
+        <p>${formatDate(b.checkIn)} → ${formatDate(b.checkOut)} · ${nights} ночей · ${b.guests} гостей</p>
+        <p style="color:var(--gold);font-weight:500;margin-top:.2rem">${formatPrice(b.total)}</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;">
+        ${statusBadge(b.status)}
+        ${b.status !== 'cancelled' ? `<button class="btn btn-ghost btn-sm" onclick="cancelBooking(${b.id})">Отменить</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function cancelBooking(id) {
+  if (!confirm('Отменить бронирование?')) return;
+  const bookings = DB.get('bookings') || [];
+  const b = bookings.find(x => x.id == id);
+  if (b) b.status = 'cancelled';
+  DB.set('bookings', bookings);
+  renderMyBookings();
+  showToast('Бронирование отменено', 'info');
+}
+
+// ── BROWSE ──
+function renderBrowse() {
+  const rooms = DB.get('rooms') || [];
+  const cat   = document.getElementById('filterCat').value;
+  const guests = document.getElementById('filterGuests').value;
+  const filtered = rooms.filter(r => {
+    if (cat && r.category !== cat) return false;
+    if (guests && r.capacity < +guests) return false;
+    return true;
+  });
+  document.getElementById('browseGrid').innerHTML = filtered.map(r => `
+    <div class="card">
+      <div class="room-img" style="background-image:url('${r.img}')">
+        <div class="room-cat"><span class="badge badge-gold">${r.category}</span></div>
+      </div>
+      <div class="room-body">
+        <h3 class="room-name">${r.name}</h3>
+        <p class="room-desc">${r.desc}</p>
+        <div class="room-features">
+          ${r.features.slice(0,3).map(f => `<span class="room-feature">✦ ${f}</span>`).join('')}
+        </div>
+        <div style="color:var(--text-muted);font-size:.82rem;margin-bottom:1rem">👤 До ${r.capacity} чел. · ${r.area} м²</div>
+        <div class="room-footer">
+          <div class="room-price">${formatPrice(r.price)} <span>/ ночь</span></div>
+          ${r.available
+            ? `<button class="btn btn-gold btn-sm" onclick="startBook(${r.id})">Забронировать</button>`
+            : `<span class="badge badge-red">Занят</span>`}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── BOOK ──
+function startBook(roomId) {
+  const room = getRoom(roomId);
+  document.getElementById('bookModalTitle').textContent = 'Бронирование: ' + room.name;
+  const today = new Date().toISOString().split('T')[0];
+  const preIn  = document.getElementById('filterIn').value  || today;
+  const preOut = document.getElementById('filterOut').value || '';
+  document.getElementById('bookModalContent').innerHTML = `
+    <div class="form-group"><label>Дата заезда</label><input type="date" id="bkIn" min="${today}" value="${preIn}"></div>
+    <div class="form-group"><label>Дата выезда</label><input type="date" id="bkOut" min="${today}" value="${preOut}"></div>
+    <div class="form-group"><label>Гостей</label>
+      <select id="bkGuests">${Array.from({length:room.capacity},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('')}</select>
+    </div>
+    <div id="bkSummary" style="margin-bottom:1rem;padding:.8rem;background:var(--dark-3);border-radius:4px;font-size:.9rem;color:var(--text-muted)">
+      Выберите даты для расчёта стоимости
+    </div>
+    <button class="btn btn-gold btn-full" onclick="confirmBook(${roomId})">Подтвердить бронь</button>`;
+
+  const upd = () => {
+    const a = document.getElementById('bkIn').value;
+    const b = document.getElementById('bkOut').value;
+    if (a && b && b > a) {
+      const n = diffDays(a, b);
+      document.getElementById('bkSummary').innerHTML =
+        `<b style="color:var(--cream)">${n} ночей × ${formatPrice(room.price)}</b> = <b style="color:var(--gold)">${formatPrice(n * room.price)}</b>`;
+    }
+  };
+  setTimeout(() => {
+    document.getElementById('bkIn').addEventListener('change', upd);
+    document.getElementById('bkOut').addEventListener('change', upd);
+    upd();
+  }, 50);
+  openModal('bookModal');
+}
+
+function confirmBook(roomId) {
+  const checkIn  = document.getElementById('bkIn').value;
+  const checkOut = document.getElementById('bkOut').value;
+  const guests   = +document.getElementById('bkGuests').value;
+  if (!checkIn || !checkOut || checkOut <= checkIn) { showToast('Укажите корректные даты', 'error'); return; }
+  const room = getRoom(roomId);
+  const nights = diffDays(checkIn, checkOut);
+  const booking = { id: Date.now(), userId: currentUser.id, roomId, checkIn, checkOut, guests, total: nights * room.price, status: 'confirmed', createdAt: new Date().toISOString().split('T')[0] };
+  const bks = DB.get('bookings') || [];
+  bks.push(booking);
+  DB.set('bookings', bks);
+  closeModal('bookModal');
+  showToast('Номер успешно забронирован!', 'success');
+  showSection('bookings');
+}
+
+// ── PROFILE ──
+function renderProfile() {
+  document.getElementById('profileName').textContent  = currentUser.name;
+  document.getElementById('profileEmail').textContent = currentUser.email;
+  document.getElementById('profileAvatar').textContent = currentUser.name[0].toUpperCase();
+  document.getElementById('editName').value  = currentUser.name;
+  document.getElementById('editEmail').value = currentUser.email;
+}
+
+function saveProfile() {
+  const name = document.getElementById('editName').value.trim();
+  const pass = document.getElementById('editPass').value;
+  if (!name) { showToast('Введите имя', 'error'); return; }
+  const users = DB.get('users') || [];
+  const u = users.find(x => x.id === currentUser.id);
+  u.name = name;
+  if (pass.length >= 6) u.password = pass;
+  else if (pass) { showToast('Пароль минимум 6 символов', 'error'); return; }
+  DB.set('users', users);
+  currentUser = u;
+  DB.set('currentUser', u);
+  renderNavUser(document.getElementById('navUser'));
+  document.getElementById('clientName').textContent = u.name;
+  renderProfile();
+  showToast('Профиль сохранён', 'success');
+}
+
+// Init
+renderMyBookings();
+</script>
+</body>
+</html>
